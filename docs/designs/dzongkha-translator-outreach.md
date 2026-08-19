@@ -4,7 +4,9 @@ Generated to unblock the bilingual UI dependency in `docs/designs/jdwnrh-hospita
 
 ---
 
-## 1. Email to the Dzongkha Development Commission
+## 1. Email to the Dzongkha Development Commission — DECLINED, not sending
+
+Founder decision (2026-08-19): skip this channel. Draft kept below for the record in case it's worth revisiting later.
 
 **To:** ddc@moha.gov.bt
 **Subject:** Translation inquiry — small civic-tech project, JDWNRH wait-time app
@@ -75,5 +77,5 @@ Generated to unblock the bilingual UI dependency in `docs/designs/jdwnrh-hospita
 ## Notes
 
 - Fill in `[YOUR NAME]`, `[YOUR PHONE / EMAIL]`, budget, and deadline before sending any of these.
-- Sending order suggested in the design doc: DDC first (official source, existing font relationship), ProZ second (broadest reach), Sherubtse third (best quality for the effort, but slower to get a response).
+- DDC outreach declined (see above) — sending order is now ProZ first (broadest reach), Sherubtse second (best quality for the effort, but slower to get a response).
 - Once a translator is engaged, the actual translation work replaces the placeholder Dzongkha strings in `lib/i18n/translations.ts` (`dz` object) and the `name_dz` column on `departments` in Supabase.
