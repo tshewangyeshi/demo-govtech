@@ -17,3 +17,6 @@ next-env.d.ts
 
 # gstack browse tool working dir
 .gstack/
+
+.vercel
+.env*
