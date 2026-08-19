@@ -100,6 +100,26 @@ Approach A was recommended (fastest real-world test of demand, no hospital depen
 - A working request-and-queue-position tool is live for at least one informal use case (e.g., the founder and people he can directly reach), with real people submitting requests and getting notified — not just a demo.
 - Self-reported reduction in time spent waiting, even without hospital-side data, as a proxy for the same connections-bypass thesis.
 
+## Buildable-Now Implementation Plan (from /plan-eng-review)
+
+Scope for this eng review: only the 3 items from the CEO plan that don't depend on JDWNRH institutional access — wait-time transparency, bilingual UI, and family/caregiver accounts. Full Approach B and the other gated CEO-plan items get their own eng review once Phase 1 unblocks.
+
+**Honest framing (surfaced by outside-voice review, worth stating plainly):** none of these 3 items move the connections-bypass metric — the plan's own stated thesis (Premise 1). Shipping them is a defensible sequencing call (build what's unblocked while the Assignment is pursued), but "done" on these 3 still means zero signal on whether the product solves the problem it exists to solve. The fairness dashboard, which does embody the thesis, remains gated on Phase 1.
+
+**Stack:** Next.js + Supabase (Postgres + Auth). [Layer 1, confirmed via search] Standard, well-documented pattern for this kind of app.
+
+**Blocking pre-work (must resolve before writing auth code):**
+1. **Entity/legal-form question moved up in priority.** Originally the Temporal Interrogation only required resolving this before/alongside the Assignment (JDWNRH conversation). Outside-voice review correctly connected two facts this session hadn't linked: real phone-OTP auth + real personal data collection (phone numbers, caregiver-patient relationships) starts with THIS buildable-now slice, on infrastructure the founder personally owns — not later, gated on JDWNRH. **Resolve the entity/legal-form question before collecting any real personal data, not just before Phase 2.**
+2. **SMS/OTP provider must be verified for Bhutan coverage.** Confirmed via search: Twilio (Supabase's default SMS provider) does not support SMS to Bhutan (+975 numbers) — two-way SMS/MMS explicitly unsupported. The original "build phone-OTP now" architecture decision assumed Supabase's default provider would work; it won't. Research a Bhutan-covering alternative (MessageBird, Vonage, a regional gateway, or WhatsApp OTP as a delivery channel) and confirm actual delivery to a real +975 number before building the auth flow.
+
+**Architecture decisions (locked for this slice):**
+- Wait-time transparency ships fully public/anonymous — no account required to view or submit a report. Submissions from a logged-in caregiver/patient account are tied to that account (for trust-weighting in the aggregate); anonymous submissions remain fully supported.
+- Wait-time data integrity (was undesigned, now required): reports must decay/lose weight over time (a 3-hour-old report is noise, not signal), a simple per-device/session rate limit to blunt spam, and a visible "last updated N min ago" freshness indicator so users can judge for themselves. Does not need to be bulletproof — needs to not be naive.
+- Family/caregiver accounts use real Supabase phone-OTP auth (pending the SMS provider fix above) — not a stub.
+- **Patients get a minimal account too** (revised from the original caregiver-only scope): a caregiver-link request requires the *patient's own* approval via their own phone-OTP account, not just a caregiver's claimed name/phone match. Without this, "least-privilege" caregiver access resolves to an honor system, not real access control.
+- Realtime (Supabase Realtime) deferred for this slice — periodic refresh/polling is sufficient for wait-time transparency and avoids added infrastructure surface (connection handling, RLS-on-realtime-channel complexity, reconnect/offline behavior) that isn't justified until Approach B's live queue-position feature actually needs it.
+- Bilingual UI (Dzongkha + English) is NOT zero-dependency, contrary to earlier framing — formal blocking dependencies: (a) a native speaker or professional translator for medical/civic terminology, (b) verified Dzongkha (Uchen script) font rendering and input method support in the Next.js app, neither of which a generic i18n library solves for free.
+
 ## Distribution Plan
 
 Web service (mobile-first). No app-store distribution needed for the pilot phase — deferred until/unless native app justification emerges (e.g., offline needs, push notification reliability). Deployment pipeline TBD once the pilot scope with JDWNRH is defined.
@@ -116,6 +136,8 @@ Web service (mobile-first). No app-store distribution needed for the pilot phase
 **Step 1 (do this first, not step 2): identify who you actually know.** Institutional access to a government hospital is a relationship problem before it's a scheduling problem — start with any personal or civil-service connection into JDWNRH or Bhutan's Ministry of Health digital health/e-governance team, and pursue a warm introduction through that path. Only fall back to cold outreach (an email/call to a department head with no prior connection) if no warm path exists after genuinely checking.
 
 **Step 2: resolve the legal/organizational-form question BEFORE or as a separate ask from the data-access request**, not bundled casually into the same conversation. Find out explicitly whether JDWNRH can integrate with a system personally owned/operated by you, or whether this requires a registered entity or formal vendor relationship first. A soft "maybe" on both questions asked together is worse than a hard yes/no on the entity question up front — if the answer is "you need to incorporate," that changes the Assignment's object entirely.
+
+**Urgency correction (from /plan-eng-review's outside voice):** this question is no longer just relevant to the Assignment conversation — it's a precondition for building the 3 buildable-now items (see Buildable-Now Implementation Plan above), since those items collect real personal data (phone numbers, caregiver-patient links) via real auth, independent of JDWNRH, starting now. Get at least informal guidance on personal legal exposure for small-scale data collection BEFORE building real auth — this can happen in parallel with Step 1's warm-intro search, it doesn't need to wait for a JDWNRH meeting.
 
 **Step 3: once you have a path in (warm intro secured, entity question answered), find out** — (1) whether a pilot department and a real capacity number are obtainable, (2) what JDWNRH's actual outpatient mix looks like (walk-in/urban vs. referred/rural — Premise 3), and (3) whether JDWNRH enforces any consistent queue order today at all (Premise 0, ask this one first — it's more fundamental than the others).
 
