@@ -28,6 +28,18 @@
 
 ## Design
 
+### Send Dzongkha translator outreach and engage a translator
+
+**What:** Send the three drafted outreach messages (DDC, ProZ job posting, Sherubtse College) and follow through to actually engage a translator for the ~20-40 UI strings currently placeholder in `lib/i18n/translations.ts`.
+
+**Why:** Bilingual UI is a blocking dependency for the buildable-now slice (see `docs/designs/jdwnrh-hospital-booking.md`, Buildable-Now Implementation Plan) — the Dzongkha strings currently just duplicate the English text as a fallback, which isn't real bilingual support.
+
+**Context:** Drafts are ready at `docs/designs/dzongkha-translator-outreach.md` — fill in name/contact/budget placeholders and send. Research found this is a genuinely thin market (Dzongkha has under 200k native speakers, most freelance platforms have little to no coverage) — DDC (the official language body, already the source of the Uchen font in use) is the highest-leverage first contact, ProZ.com the broadest reach, Sherubtse College's Dzongkha department the likely-highest-quality option for medical/civic terminology.
+
+**Effort:** S (sending) + M (turnaround waiting on a response) + S (applying the translations once received)
+**Priority:** P1
+**Depends on:** None — can happen in parallel with the Assignment (JDWNRH outreach) and the entity/legal follow-up
+
 ### Run /design-consultation to establish DESIGN.md
 
 **What:** A dedicated design-system session — typography, color, spacing, component vocabulary — once more of the product exists.
