@@ -164,7 +164,9 @@ A rough HTML wireframe of the wait-time page caught a real bug live: the Dzongkh
 
 ## Distribution Plan
 
-Web service (mobile-first). No app-store distribution needed for the pilot phase — deferred until/unless native app justification emerges (e.g., offline needs, push notification reliability). Deployment pipeline TBD once the pilot scope with JDWNRH is defined.
+Web service (mobile-first). No app-store distribution needed for the pilot phase — deferred until/unless native app justification emerges (e.g., offline needs, push notification reliability).
+
+**Deployed 2026-08-19:** live on Vercel at `https://demo-lac-xi.vercel.app`, gated behind HTTP Basic Auth (`proxy.ts` — see Vercel's native password protection costs $150/mo, not proportionate for a pre-revenue pilot, so a free middleware-based gate was used instead). Credentials known to the founder only; share with anyone given pilot access. Production environment variables (Supabase URL/key, Basic Auth credentials) set directly on Vercel, not committed to the repo. GitHub auto-deploy-on-push is NOT connected yet (the Vercel↔GitHub App authorization needs a one-time manual step in the dashboard) — deployments are currently manual via `vercel --prod`.
 
 ## Dependencies
 
