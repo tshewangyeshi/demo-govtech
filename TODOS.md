@@ -28,17 +28,17 @@
 
 ## Design
 
-### Send Dzongkha translator outreach and engage a translator
+### Revisit bilingual UI (Dzongkha) — cut from active scope
 
-**What:** Send the two drafted outreach messages (ProZ job posting, Sherubtse College) and follow through to actually engage a translator for the ~20-40 UI strings currently placeholder in `lib/i18n/translations.ts`. DDC outreach declined by founder (2026-08-19) — draft kept in the outreach doc for the record, not part of the active plan.
+**What:** Bilingual UI was accepted scope, then fully cut on 2026-08-19 (founder decision): English-only for the pilot, no active translator outreach. Not deferred to "send outreach later" — this is a scope cut, revisit only if circumstances change (e.g. a translator becomes available through some other channel, or real usage shows English-only is genuinely blocking rural/referred patients from using the product).
 
-**Why:** Bilingual UI is a blocking dependency for the buildable-now slice (see `docs/designs/jdwnrh-hospital-booking.md`, Buildable-Now Implementation Plan) — the Dzongkha strings currently just duplicate the English text as a fallback, which isn't real bilingual support.
+**Why:** The Dzongkha translator market turned out to be genuinely thin (see `docs/designs/dzongkha-translator-outreach.md` for the research) and the founder chose not to block the pilot on it.
 
-**Context:** Drafts are ready at `docs/designs/dzongkha-translator-outreach.md` — fill in name/contact/budget placeholders and send. Research found this is a genuinely thin market (Dzongkha has under 200k native speakers, most freelance platforms have little to no coverage) — ProZ.com is the broadest reach, Sherubtse College's Dzongkha department the likely-highest-quality option for medical/civic terminology.
+**Context:** The i18n scaffolding (`lib/i18n/`, `components/LanguageToggle.tsx`) stays in the codebase but is unused — the toggle isn't rendered in `app/wait-times/page.tsx` since a visible toggle that doesn't translate anything would be misleading. Outreach drafts (ProZ, Sherubtse College, and a declined DDC draft) are preserved at `docs/designs/dzongkha-translator-outreach.md` in case this gets revisited.
 
-**Effort:** S (sending) + M (turnaround waiting on a response) + S (applying the translations once received)
-**Priority:** P1
-**Depends on:** None — can happen in parallel with the Assignment (JDWNRH outreach) and the entity/legal follow-up
+**Effort:** N/A — not active
+**Priority:** P4 (someday, not currently planned)
+**Depends on:** Nothing currently — parked
 
 ### Run /design-consultation to establish DESIGN.md
 
@@ -46,7 +46,7 @@
 
 **Why:** `/plan-design-review` had to make typography, accessibility, and interaction-state decisions from scratch with no DESIGN.md to calibrate against (see `docs/designs/jdwnrh-hospital-booking.md`, Design Decisions section). Future reviews will keep re-deriving basics without one.
 
-**Context:** Raised at the end of the first `/plan-design-review` pass on the buildable-now slice (wait-time transparency, bilingual UI, caregiver accounts). Not urgent while the product is still pre-Phase-1 and only 3 features exist — worth doing once there are enough real screens to systematize rather than guess at.
+**Context:** Raised at the end of the first `/plan-design-review` pass on the buildable-now slice, at the time wait-time transparency + bilingual UI + caregiver accounts (bilingual UI has since been cut, see above — buildable-now is now wait-time transparency + caregiver accounts). Not urgent while the product is still pre-Phase-1 and only 2 features exist — worth doing once there are enough real screens to systematize rather than guess at.
 
 **Effort:** M
 **Priority:** P3

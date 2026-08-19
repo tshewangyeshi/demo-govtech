@@ -102,7 +102,7 @@ Approach A was recommended (fastest real-world test of demand, no hospital depen
 
 ## Buildable-Now Implementation Plan (from /plan-eng-review)
 
-Scope for this eng review: only the 3 items from the CEO plan that don't depend on JDWNRH institutional access — wait-time transparency, bilingual UI, and family/caregiver accounts. Full Approach B and the other gated CEO-plan items get their own eng review once Phase 1 unblocks.
+Scope for this eng review, originally 3 items from the CEO plan that don't depend on JDWNRH institutional access: wait-time transparency, bilingual UI, and family/caregiver accounts. **Bilingual UI was later cut from scope (2026-08-19, see below) — the buildable-now slice is now wait-time transparency and family/caregiver accounts.** Full Approach B and the other gated CEO-plan items get their own eng review once Phase 1 unblocks.
 
 **Honest framing (surfaced by outside-voice review, worth stating plainly):** none of these 3 items move the connections-bypass metric — the plan's own stated thesis (Premise 1). Shipping them is a defensible sequencing call (build what's unblocked while the Assignment is pursued), but "done" on these 3 still means zero signal on whether the product solves the problem it exists to solve. The fairness dashboard, which does embody the thesis, remains gated on Phase 1.
 
@@ -126,7 +126,7 @@ Scope for this eng review: only the 3 items from the CEO plan that don't depend 
 - Family/caregiver accounts use real Supabase phone-OTP auth (pending the SMS provider fix above) — not a stub.
 - **Patients get a minimal account too** (revised from the original caregiver-only scope): a caregiver-link request requires the *patient's own* approval via their own phone-OTP account, not just a caregiver's claimed name/phone match. Without this, "least-privilege" caregiver access resolves to an honor system, not real access control.
 - Realtime (Supabase Realtime) deferred for this slice — periodic refresh/polling is sufficient for wait-time transparency and avoids added infrastructure surface (connection handling, RLS-on-realtime-channel complexity, reconnect/offline behavior) that isn't justified until Approach B's live queue-position feature actually needs it.
-- Bilingual UI (Dzongkha + English) is NOT zero-dependency, contrary to earlier framing — formal blocking dependencies: (a) a native speaker or professional translator for medical/civic terminology, (b) verified Dzongkha (Uchen script) font rendering and input method support in the Next.js app, neither of which a generic i18n library solves for free.
+- ~~Bilingual UI (Dzongkha + English) is NOT zero-dependency...~~ — **SCOPE CUT, 2026-08-19 (founder decision): English-only for now.** The Dzongkha translator search turned up a genuinely thin market (see `docs/designs/dzongkha-translator-outreach.md`), and rather than block the pilot on that, the founder chose to drop bilingual support from the buildable-now slice entirely. The i18n scaffolding (`lib/i18n/`, `components/LanguageToggle.tsx`) stays in the codebase but is not rendered — a visible language toggle that doesn't actually translate anything would be worse than not having one. Revisit once/if a translator is engaged. This also means the buildable-now slice is now 2 features, not 3: wait-time transparency and family/caregiver accounts.
 
 ## Design Decisions (from /plan-design-review)
 
