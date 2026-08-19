@@ -25,3 +25,17 @@
 **Effort:** L
 **Priority:** P3
 **Depends on:** Phase 1 (JDWNRH institutional access) AND a separate district-hospital relationship not yet attempted
+
+## Design
+
+### Run /design-consultation to establish DESIGN.md
+
+**What:** A dedicated design-system session — typography, color, spacing, component vocabulary — once more of the product exists.
+
+**Why:** `/plan-design-review` had to make typography, accessibility, and interaction-state decisions from scratch with no DESIGN.md to calibrate against (see `docs/designs/jdwnrh-hospital-booking.md`, Design Decisions section). Future reviews will keep re-deriving basics without one.
+
+**Context:** Raised at the end of the first `/plan-design-review` pass on the buildable-now slice (wait-time transparency, bilingual UI, caregiver accounts). Not urgent while the product is still pre-Phase-1 and only 3 features exist — worth doing once there are enough real screens to systematize rather than guess at.
+
+**Effort:** M
+**Priority:** P3
+**Depends on:** Having enough of the product built to have real patterns to systematize

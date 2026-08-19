@@ -120,6 +120,40 @@ Scope for this eng review: only the 3 items from the CEO plan that don't depend 
 - Realtime (Supabase Realtime) deferred for this slice — periodic refresh/polling is sufficient for wait-time transparency and avoids added infrastructure surface (connection handling, RLS-on-realtime-channel complexity, reconnect/offline behavior) that isn't justified until Approach B's live queue-position feature actually needs it.
 - Bilingual UI (Dzongkha + English) is NOT zero-dependency, contrary to earlier framing — formal blocking dependencies: (a) a native speaker or professional translator for medical/civic terminology, (b) verified Dzongkha (Uchen script) font rendering and input method support in the Next.js app, neither of which a generic i18n library solves for free.
 
+## Design Decisions (from /plan-design-review)
+
+A rough HTML wireframe of the wait-time page caught a real bug live: the Dzongkha toggle label rendered as broken/tofu characters — no Tibetan/Uchen script font was installed on the rendering system. This is the font-rendering dependency above, now empirically confirmed, not just a theoretical risk.
+
+**Information architecture:**
+- Wait-time page is multi-department (a list, e.g. General Medicine, Pediatrics, ENT), not scoped to a single department — matches the public-transparency goal and serves patients outside the founder's own OPD use case.
+- Default language is English, with Dzongkha available via a persistent toggle (remembers the user's choice per device). Deliberately chosen over defaulting to Dzongkha, given the founder is the first real user and initial testing context.
+- Typography: **Uchen** (Google Fonts) for Dzongkha — a free webfont built specifically for Dzongkha by Bhutan's own Dzongkha Development Commission, not a generic Tibetan font — paired with **IBM Plex Sans** for Latin/English text. Avoids shipping with system-ui/-apple-system as the primary font (a known "gave up on typography" signal).
+
+**Interaction states:**
+
+| Feature | Loading | Empty | Error | Success | Partial/Low-confidence |
+|---|---|---|---|---|---|
+| Wait-time estimate | Skeleton/spinner on department list | Explicit "No recent reports — be the first to report" card with CTA, not a decayed near-zero number | Offline/connection-failure state with retry, plus a "call this department" fallback link | N/A (read-only view) | Show freshness ("updated N min ago") AND a separate confidence indicator ("based on N reports") — these are different signals and must not be conflated |
+| Wait-time report submission | Button shows submitting state | N/A | Rate-limited: explicit "You've already reported recently — thanks!" message, never a silent drop | Visible confirmation the report was received | N/A |
+| Caregiver-link request | "Waiting for approval" state, clearly time-boxed | N/A | OTP failure/expiry: clear retry instructions | Link confirmed, caregiver gains scoped access | "Provisional" status if the patient hasn't responded within the grace window (see below) — clearly marked as provisional, not silently treated as approved |
+| Bilingual toggle | N/A | N/A | Missing translation key: falls back to English text, never a raw key or blank string | N/A | N/A |
+
+**Caregiver-link approval fallback (critical gap, now resolved):** a patient who cannot self-approve (sedated, elderly, no signal, doesn't check their phone) gets a time-boxed grace link — the caregiver can link provisionally if the patient hasn't responded within a short window (e.g. 24h), clearly marked "provisional" in the UI on both sides, with the patient able to revoke it anytime once they're able to. This is a deliberate usability/security tradeoff, not an oversight — document it as such so a future reviewer doesn't mistake the grace window for a bug.
+
+**Wait-time page next action:** includes a "call this department" link/number so an anxious user has somewhere to go besides just a number — no new backend or JDWNRH dependency required.
+
+**Data model:** caregiver-patient linking is many-to-many (a patient can have multiple approved caregivers; a caregiver can be linked to multiple patients) — matches real family structures directly and is cheap to build correctly now vs. an expensive migration later.
+
+**Accessibility (full spec, not deferred):** 44px minimum touch targets, screen-reader labels/ARIA landmarks on all interactive elements, full keyboard navigation (especially for OTP entry), and status indicators that never rely on color alone (e.g. the freshness/confidence indicators use text, not just a colored dot) — matches the user base's real demographics (elderly, possibly vision/motor-impaired patients and stressed caregivers).
+
+**Design system:** no DESIGN.md exists yet — proceeding with universal design principles for this slice. Recommend `/design-consultation` separately once more of the product exists, to establish a durable design system rather than deriving one piecemeal per feature.
+
+## Approved Mockups
+
+| Screen/Section | Mockup Path | Direction | Notes |
+|---|---|---|---|
+| Wait-time transparency page | `~/.gstack/projects/demo/designs/wait-time-page-20260819/sketch-v1.png` | Rough wireframe (system fonts, no color) testing information hierarchy and empty/stale states | Live render caught a real Dzongkha font-rendering failure (tofu characters) — confirms the font-verification dependency above is not theoretical. Production build uses Uchen + IBM Plex Sans, not the sketch's placeholder system fonts. |
+
 ## Distribution Plan
 
 Web service (mobile-first). No app-store distribution needed for the pilot phase — deferred until/unless native app justification emerges (e.g., offline needs, push notification reliability). Deployment pipeline TBD once the pilot scope with JDWNRH is defined.
