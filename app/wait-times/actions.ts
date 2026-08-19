@@ -3,8 +3,9 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
-import { waitTimeRepository } from "@/lib/wait-time/repository";
+import { createWaitTimeRepository } from "@/lib/wait-time/repository";
 import { isRateLimited, recordSubmission } from "@/lib/wait-time/rate-limit";
+import { createClient } from "@/lib/supabase/server";
 
 const DEVICE_COOKIE = "jdwnrh-device";
 
@@ -44,7 +45,16 @@ export async function submitWaitReport(
     return { ok: false, rateLimited: true };
   }
 
-  await waitTimeRepository.submitReport(departmentId, clamped, null);
+  // Tie the submission to the account when logged in -- a trust signal
+  // for future weighting (design review Pass 6). Anonymous stays fully
+  // supported; the rate limit applies uniformly either way.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const repository = await createWaitTimeRepository();
+  await repository.submitReport(departmentId, clamped, user?.id ?? null);
   recordSubmission(deviceToken);
   revalidatePath("/wait-times");
 

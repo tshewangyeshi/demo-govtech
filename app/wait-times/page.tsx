@@ -1,10 +1,11 @@
-import { waitTimeRepository } from "@/lib/wait-time/repository";
+import { createWaitTimeRepository } from "@/lib/wait-time/repository";
 import { DepartmentCard } from "@/components/DepartmentCard";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { AccountNav } from "@/components/AccountNav";
 
 export default async function WaitTimesPage() {
-  const departments = await waitTimeRepository.listDepartmentsWithReports();
+  const repository = await createWaitTimeRepository();
+  const departments = await repository.listDepartmentsWithReports();
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-col">
