@@ -1,6 +1,7 @@
 import { waitTimeRepository } from "@/lib/wait-time/repository";
 import { DepartmentCard } from "@/components/DepartmentCard";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { AccountNav } from "@/components/AccountNav";
 
 export default async function WaitTimesPage() {
   const departments = await waitTimeRepository.listDepartmentsWithReports();
@@ -12,9 +13,12 @@ export default async function WaitTimesPage() {
         <LanguageToggle />
       </header>
 
-      <p className="px-4 pb-2 pt-3.5 text-[13px] text-neutral-500">
-        Reported by people currently at the hospital. Not official hospital data.
-      </p>
+      <div className="flex items-center justify-between px-4 pb-2 pt-3.5">
+        <p className="text-[13px] text-neutral-500">
+          Reported by people currently at the hospital. Not official hospital data.
+        </p>
+        <AccountNav />
+      </div>
 
       <ul className="flex flex-col gap-2.5 px-4 pb-24 pt-1">
         {departments.map((department) => (
