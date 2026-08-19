@@ -148,3 +148,40 @@ create policy "only the patient can update link status"
   on caregiver_links for update
   using (patient_id = auth.uid())
   with check (patient_id = auth.uid());
+
+-- ---------------------------------------------------------------------
+-- Security-definer function: a caregiver needs to see the display_name
+-- of a patient they have an active link with, but the profiles SELECT
+-- policy above only allows viewing your own profile. This function
+-- narrowly bypasses that, scoped to only patients with an approved or
+-- provisional (grace-expired) link to the calling caregiver -- never an
+-- arbitrary profile lookup.
+-- ---------------------------------------------------------------------
+create function get_linked_patient_name(p_patient_id uuid)
+returns text
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select p.display_name
+  from profiles p
+  join caregiver_links cl
+    on cl.patient_id = p.id
+  where p.id = p_patient_id
+    and cl.caregiver_id = auth.uid()
+    and cl.status <> 'revoked'
+    and (cl.status = 'approved' or cl.grace_expires_at < now())
+  limit 1;
+$$;
+
+-- ---------------------------------------------------------------------
+-- Seed data: starting department list (matches lib/wait-time/repository.ts
+-- mock data, so the switch from mock to live Supabase is a like-for-like
+-- comparison). Phone numbers are placeholders -- replace with real JDWNRH
+-- department numbers before this goes live for real users.
+-- ---------------------------------------------------------------------
+insert into departments (name, phone_number) values
+  ('General Medicine', '+975 2 322496'),
+  ('Pediatrics', '+975 2 322497'),
+  ('ENT', '+975 2 322498');
