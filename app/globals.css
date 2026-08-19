@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafaf9;
+  --foreground: #1a1a1a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-latin: var(--font-latin);
+  --font-dzongkha: var(--font-dzongkha);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Uchen (Dzongkha) needs more line-height than Latin text at the same
+   font-size -- Uchen script glyphs are taller/denser (docs/designs
+   jdwnrh-hospital-booking.md, Pass 4 specificity finding). */
+[lang="dz"],
+.font-dzongkha {
+  line-height: 1.8;
+}
